@@ -1,0 +1,6 @@
+form.form-signup(ng-submit='signup(user)')
+    h2.form-signup-heading Sign up form
+    input.form-control(type='text', placeholder='Username', required, autofocus, ng-model='user.username')
+    input.form-control(type='password', placeholder='Password', required, ng-model='user.password')
+    input.form-control(type='email', placeholder='Email', required, ng-model='user.email')
+    button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign up
