@@ -10,7 +10,8 @@ var multipartMiddleware = multipart({
 });
 
 module.exports = function(app) {
-    app.get('/files', auth.requiresLogin, files.getList);
+    app.get('/files', auth.requiresLogin, files.getFiles('list'));
+    app.get('/files/tree', auth.requiresLogin, files.getFiles('tree'));
     app.post('/files', auth.requiresLogin, multipartMiddleware, files.uploadFile);
     app.get('/files/file', auth.requiresLogin, files.sendFile);
     app.delete('/files/file', auth.requiresLogin, files.deleteFile);

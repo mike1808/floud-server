@@ -44,6 +44,12 @@ var FileSchema = new Schema({
         type: Date,
         default: Date.now
     }
+}, {
+    toObject: { getters: true }
+});
+
+FileSchema.virtual('name').get(function() {
+    return this.path && this.path.substr(this.path.lastIndexOf('/') + 1);
 });
 
 FileSchema.index({ path: 1, version: 1}, { unique: true });

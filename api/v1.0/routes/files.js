@@ -1,14 +1,10 @@
+
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
 var File = mongoose.model('File');
-var fs = require('fs');
 var path = require('path');
-var crypto = require('crypto');
 var async = require('async');
 var fileService = require('file-service');
-var utils = require('utils');
-var formidable = require('formidable');
-var multiparty = require('multiparty');
 
 function createResponseData(files) {
     return files.map(function(file) {
@@ -64,56 +60,73 @@ function createFilesTree(files) {
         }
 
         file.name = file.path.substr(file.path.lastIndexOf('/') + 1);
-        file.id = generateRandomStr(6);
         subtree.children.push(file);
     });
 
     return tree;
 }
 
-exports.getList = function(req, res, next) {
-    File.aggregate(
-        {
-            $match: {
-                user: ObjectId(req.user.id),
-                deleted: false
-            }
-        },
-        {
-            $sort: {
-                version: -1
-            }
-        },
-        {
-            $group: {
-                _id: '$path',
-                path: { $first: '$path' },
-                version: { $first: '$version' },
-                size: { $first: '$size' },
-                hash: { $first: '$hash' },
-                modified: { $first: '$modified' },
-                created: { $first: '$created' }
-            }
-        },
-        {
-            $project: {
-                _id: 0,
-                path: 1,
-                version: 1,
-                size: 1,
-                hash: 1,
-                modified: 1,
-                created: 1
-            }
-        },
+exports.getFiles = function(type) {
+    return function(req, res, next) {
+        req.query.from && req.checkQuery('from', 'should be correct ISO Date').isDate();
 
-        function(err, files) {
-            if (err) { return next(err); }
+        var errors = req.validationErrors();
 
-            var tree = createFilesTree(files);
+        if (errors) res.send(400, errors);
 
-            res.send({ files: tree });
-        });
+        var matchOpts = {
+            user: ObjectId(req.user.id),
+            deleted: false
+        };
+
+        if (req.query.from) {
+            matchOpts.created = { $gte: new Date(req.query.from) };
+        }
+
+        File.aggregate(
+            {
+                $match: matchOpts
+            },
+            {
+                $sort: {
+                    version: -1
+                }
+            },
+            {
+                $group: {
+                    _id: '$path',
+                    path: { $first: '$path' },
+                    version: { $first: '$version' },
+                    size: { $first: '$size' },
+                    hash: { $first: '$hash' },
+                    created: { $first: '$created' }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    path: 1,
+                    version: 1,
+                    size: 1,
+                    hash: 1,
+                    created: 1
+                }
+            },
+
+            function(err, files) {
+                if (err) { return next(err); }
+
+                var filesOut;
+
+                switch (type) {
+                    case 'list': filesOut = files; break;
+                    case 'tree': filesOut = createFilesTree(files); break;
+                    default : throw new Error('wrong file output format');
+                }
+
+                res.send({ files: filesOut });
+            });
+    }
 };
 
 exports.uploadFile = function(req, res, next) {

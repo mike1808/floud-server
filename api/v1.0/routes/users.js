@@ -37,6 +37,7 @@ exports.createUser = function(req, res, next) {
 
 exports.login = function(req, res, next) {
     var userData = req.body;
+    console.log(userData);
 
     if (!userData.username || !userData.password) {
         return res.send(400, 'Bad request - username or password is missing');
