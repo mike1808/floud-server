@@ -26,6 +26,10 @@ app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
+app.use(function(req, res, next) {
+    console.log('BODY', req.body);
+    next();
+});
 app.use(expressValidator());
 app.use(express.methodOverride());
 app.use(express.static(path.join(__dirname, 'public')));

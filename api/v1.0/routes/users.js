@@ -14,7 +14,7 @@ function generateSigninResponse(user){
     };
 
     return result;
-};
+}
 
 exports.createUser = function(req, res, next) {
     var userData = req.body;
