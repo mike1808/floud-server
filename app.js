@@ -1,4 +1,3 @@
-console.log(process.env);
 var express = require('express');
 var http = require('http');
 var path = require('path');
@@ -19,7 +18,8 @@ auth.init(config.get('auth'));
 var app = express();
 
 // all environments
-app.set('port', config.get('port'));
+app.set('env', config.get('NODE_ENV') || 'development');
+app.set('port', config.get('PORT') || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(express.favicon());
@@ -45,7 +45,6 @@ var apiVersion = config.get('api:version');
 log.info('Initializing API server: /api/v%s server', apiVersion);
 var apiServer = require('./api/v' + apiVersion + '/server');
 app.use('/api/v' + apiVersion, apiServer);
-
 
 
 http.createServer(app).listen(app.get('port'), function() {
