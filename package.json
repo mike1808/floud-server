@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "NODE_PATH='.;./libs' node app.js"
+    "start": "export NODE_PATH=.;./libs node app.js"
   },
   "dependencies": {
     "express": "3.4.4",
