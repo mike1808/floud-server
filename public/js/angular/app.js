@@ -1,7 +1,7 @@
 'use strict';
 
 var app = angular.module('floud', [
-    'ngRoute', 'LocalStorageModule', 'mgcrea.ngStrap', 'angularTreeview',
+    'ngRoute', 'LocalStorageModule', 'mgcrea.ngStrap', 'angularTreeview', 'angularFileUpload',
     'floud.controllers', 'floud.services', 'floud.directives'
 ]);
 
