@@ -68,7 +68,7 @@ function createFilesTree(files) {
 
 exports.getFiles = function(type) {
     return function(req, res, next) {
-        req.query.from && req.checkQuery('from', 'should be correct ISO Date').isDate();
+        req.query.from && req.checkQuery('from', 'should be long').isInt();
 
         var errors = req.validationErrors();
 
@@ -80,6 +80,7 @@ exports.getFiles = function(type) {
         };
 
         if (req.query.from) {
+            req.sanitize('from').toInt();
             matchOpts.created = { $gte: new Date(req.query.from) };
         }
 
