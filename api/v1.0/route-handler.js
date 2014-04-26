@@ -14,6 +14,7 @@ module.exports = function(app) {
     app.get('/files/tree', auth.requiresLogin, files.getFiles('tree'));
     app.post('/files', auth.requiresLogin, multipartMiddleware, files.uploadFile);
     app.get('/files/file', auth.requiresLogin, files.sendFile);
+    app.put('/files/move', auth.requiresLogin, files.move);
     app.delete('/files/file', auth.requiresLogin, files.deleteFile);
 
     app.put('/users', users.createUser);

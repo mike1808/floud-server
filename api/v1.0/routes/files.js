@@ -125,7 +125,7 @@ exports.getFiles = function(type) {
                     default : throw new Error('wrong file output format');
                 }
 
-                res.send({ files: filesOut });
+                res.send(filesOut);
             });
     }
 };
@@ -186,7 +186,7 @@ exports.uploadFile = function(req, res, next) {
 
 exports.sendFile = function(req, res, next) {
     if (!req.query.path) {
-        return res.send(401);
+        return res.send(400);
     }
 
     File.find({ path: req.query.path, deleted: false }, {}, { sort: { version: -1 }}).exec(function(err, files) {
@@ -198,8 +198,7 @@ exports.sendFile = function(req, res, next) {
             return res.send(404);
         }
 
-        var pendingFile = files[0];
-        if (req.query.version !== '') {
+        var pendingFile = files[0];        if (req.query.version) {
             files.forEach(function(file) {
                 if (file.version == req.query.version) {
                     pendingFile = file;
@@ -208,7 +207,7 @@ exports.sendFile = function(req, res, next) {
         }
 
         if (!pendingFile) {
-            return res.send(401, 'File with such version doesn\'t exist');
+            return res.send(400, 'File with such version doesn\'t exist');
         }
 
         var filePath = fileService.getFilePath(pendingFile.id, req.user);
@@ -218,7 +217,7 @@ exports.sendFile = function(req, res, next) {
 
         res.download(filePath, fileName, function(err) {
             if (err) {
-
+                res.send(400);
             } else {
 
             }
@@ -228,7 +227,7 @@ exports.sendFile = function(req, res, next) {
 
 exports.deleteFile = function(req, res, next) {
     if (!req.query.path || req.query.path === '') {
-        return res.send(401, 'No path was specified');
+        return res.send(400);
     }
 
     File.find({ path: req.query.path, deleted: false }, {}, { sort: { version: -1 }}).exec(function(err, files) {
@@ -246,8 +245,24 @@ exports.deleteFile = function(req, res, next) {
 
         }, function(err) {
             if (err) return next(err);
-            res.send(200);
+            res.send(200, {});
         });
+    });
+};
+
+exports.move = function(req, res, next) {
+    if (!req.body.oldPath || req.body.newPath === '') {
+        return res.send(400);
+    }
+
+    File.update({ path: req.body.oldPath }, { $set: { path: req.body.newPath }}).exec(function(err, success) {
+        if (err) return next(err);
+
+        if (!success) {
+            return res.send(400);
+        }
+
+        res.send(200, {});
     });
 };
 

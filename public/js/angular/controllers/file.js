@@ -6,7 +6,7 @@ angular
         $scope.files = null;
 
         File.list({}, function(filesTree) {
-            $scope.files = filesTree.files;
+            $scope.files = filesTree;
         });
 
         var uploader = $scope.uploader = $fileUploader.create({
