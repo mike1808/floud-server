@@ -3,8 +3,7 @@ html(ng-app='floud', ng-controller='MainCtrl')
     head
         title Floud
 
-        link(href='/libs/bootstrap/css/bootstrap.css', rel='stylesheet')
-        link(href='/libs/bootstrap/css/bootstrap-theme.min.css', rel='stylesheet')
+        link(href='/css/bootstrap/bootstrap.css', rel='stylesheet')
         link(href='/css/app.css', rel='stylesheet')
         meta(name='viewport', content='width=device-width, initial-scale=1.0')
         meta(name='description', content='')
@@ -12,7 +11,8 @@ html(ng-app='floud', ng-controller='MainCtrl')
         meta(charset='utf-8')
         base(href='/')
     body
-        section
+        .background-image
+        section.content
             .container(ng-view)
 
         // jquery and friends

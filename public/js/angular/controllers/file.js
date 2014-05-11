@@ -3,6 +3,8 @@
 angular
     .module('floud.controllers')
     .controller('FileCtrl', ['$location', 'Auth', '$scope', 'File', '$fileUploader', function($location, Auth, $scope, File, $fileUploader) {
+        $scope.currentPath = '/';
+        $scope.currentFolderContent = null;
         $scope.files = null;
 
         File.list({}, function(filesTree) {
@@ -17,7 +19,6 @@ angular
             },
             formData: {},
             autoUpload: false
-
         });
 
         uploader.bind('afteraddingfile', function(evt, item) {
@@ -43,5 +44,9 @@ angular
 
         uploader.bind('complete', function() {
             console.log('done');
-        })
+        });
+
+        $scope.getFolderContent = function() {
+
+        }
     }]);

@@ -44,15 +44,16 @@ if ('development' == app.get('env')) {
     app.use(express.errorHandler());
 }
 
-app.get('/', function(req, res) {
-    res.render('index');
-});
-
 var apiVersion = config.get('api:version');
 log.info('Initializing API server: /api/v%s server', apiVersion);
 var apiServer = require('./api/v' + apiVersion + '/server');
 app.use('/api/v' + apiVersion, apiServer);
 
+
+
+app.get('/*', function(req, res) {
+    res.render('index');
+});
 
 http.createServer(app).listen(app.get('port'), function() {
     console.log('Express server listening on port ' + app.get('port'));
