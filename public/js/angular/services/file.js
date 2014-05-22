@@ -4,7 +4,7 @@ angular.module('floud.services').
     service('File', ['Auth', '$resource', function(Auth, $resource) {
         var filesApi = '/api/v1.0/files';
         var filesRes = $resource(filesApi, {}, {
-            list: {
+            tree: {
                 isArray: true,
                 url: filesApi + '/tree',
                 method: 'GET',

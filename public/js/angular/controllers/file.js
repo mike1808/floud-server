@@ -7,7 +7,8 @@ angular
         $scope.currentFolderContent = null;
         $scope.files = null;
 
-        File.list({}, function(filesTree) {
+        File.tree({}, function(filesTree) {
+            console.log(filesTree);
             $scope.files = filesTree;
         });
 

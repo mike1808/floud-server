@@ -19,8 +19,9 @@ module.exports = function(app) {
 
     app.put('/users', users.createUser);
     app.post('/users/login', users.login);
-    app.post('/users/register', auth.requiresLogin, users.saveRegId);
     app.delete('/users/:id', users.deleteUser);
     app.get('/users/current', auth.requiresLogin, users.getCurrentUser);
+    app.post('/users/gcm', auth.requiresLogin, users.regGcm);
+    app.delete('/users/gcm', auth.requiresLogin, users.unregGcm);
 };
 

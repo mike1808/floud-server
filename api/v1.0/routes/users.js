@@ -73,7 +73,7 @@ exports.getCurrentUser = function(req, res, next) {
     res.send(req.user);
 };
 
-exports.saveRegId = function(req, res, next) {
+exports.regGcm = function(req, res, next) {
     var regId = req.body.regId;
 
     if (!regId) {
@@ -83,7 +83,7 @@ exports.saveRegId = function(req, res, next) {
     var user = req.user;
 
     if (user.regIds) {
-        if (user.indexOf(regId) == -1) {
+        if (user.regIds.indexOf(regId) == -1) {
             user.regIds.push(regId);
         } else {
             return res.send(200);
@@ -94,6 +94,35 @@ exports.saveRegId = function(req, res, next) {
 
     user.save(function(err) {
         if (err) return next(err);
+
+        req.app.emit('reg', { userId: user.id.toString(), regId: regId });
+
+        res.send(200);
+    });
+};
+
+exports.unregGcm = function(req, res, next) {
+    var regId = req.body.regId;
+
+    if (!regId) {
+        return res.send(400, 'Bad request - registration id is missing');
+    }
+
+    var user = req.user;
+
+    if (user.regIds) {
+        var idx = user.regIds.indexOf(regId);
+        if (idx !== -1) {
+            user.regIds.splice(idx, 1);
+            user.markModified('regIds');
+        }
+    }
+
+    user.save(function(err) {
+        if (err) return next(err);
+
+        req.app.emit('unreg', { userId: user.id.toString(), regId: regId });
+
 
         res.send(200);
     });

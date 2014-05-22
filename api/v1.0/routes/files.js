@@ -186,7 +186,10 @@ exports.uploadFile = function(req, res, next) {
                 return next(err);
             }
 
-            req.app.emit('upload', result.data.toObject());
+            req.app.emit('change', {
+                userId: req.user.id.toString(),
+                regId: req.query.regId
+            });
 
             res.send(result.status, result.text || result.data);
         });
@@ -207,7 +210,8 @@ exports.sendFile = function(req, res, next) {
             return res.send(404);
         }
 
-        var pendingFile = files[0];        if (req.query.version) {
+        var pendingFile = files[0];
+        if (req.query.version) {
             files.forEach(function(file) {
                 if (file.version == req.query.version) {
                     pendingFile = file;
@@ -255,7 +259,10 @@ exports.deleteFile = function(req, res, next) {
         }, function(err) {
             if (err) return next(err);
 
-            req.app.emit('delete', { path: req.query.path });
+            req.app.emit('change', {
+                userId: req.user.id.toString(),
+                regId: req.query.regId
+            });
 
             res.send(200, {});
         });
@@ -274,7 +281,10 @@ exports.move = function(req, res, next) {
             return res.send(400);
         }
 
-        req.emit('move', req.body);
+        req.app.emit('change', {
+            userId: req.user.id.toString(),
+            regId: req.query.regId
+        });
 
         res.send(200, {});
     });

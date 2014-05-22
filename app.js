@@ -16,8 +16,23 @@ auth.init(config.get('auth'));
 
 var app = express();
 
-log.info('Initializing Google Cloud Messaging');
-require('gcm')(app, config.get('gcm'));
+var mongoose = require('mongoose');
+var User = mongoose.model('User');
+
+User.find({}, 'regIds').lean().exec(function(err, users) {
+    if (err) throw err;
+
+    var usersRegIds = {};
+
+    users.forEach(function(user) {
+        usersRegIds[user._id.toString()] = user.regIds;
+    });
+
+
+    log.info('Initializing Google Cloud Messaging');
+    require('gcm')(app, usersRegIds, config.get('gcm'));
+});
+
 
 
 // all environments
@@ -70,9 +85,11 @@ app.use('/api/v' + apiVersion, apiServer);
 
 
 
-app.get('/*', function(req, res) {
+app.get('/', function(req, res) {
     res.render('index');
 });
+
+
 
 http.createServer(app).listen(app.get('port'), function() {
     console.log('Express server listening on port ' + app.get('port'));
