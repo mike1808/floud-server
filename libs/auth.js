@@ -84,7 +84,7 @@ function processToken(req, res, next) {
     User.findById(req.authdata.userId, function(err, user) {
         if (err) {
             log.error(err);
-            return res.send(500);
+            return next(err);
         }
 
         if (!user) {
@@ -96,16 +96,23 @@ function processToken(req, res, next) {
     });
 }
 
+function getRegId(req, res, next) {
+    req.user.regId = req.get('Registration');
+    next();
+}
 
 //Middleware for user request authentication
 exports.requiresLogin = function(req, res, next) {
-    processToken(req, res, function() {
+    processToken(req, res, function(err) {
+        if (err) return next(err);
+
         if (req.authdata.type != 'access') {
             res.send(403, 'Invalid token type');
             return;
         }
-        next();
-    })
+
+        getRegId(req, res, next);
+    });
 };
 
 

@@ -11,5 +11,8 @@
     "storage": {
         "path": "./storage/",
         "public": "./public/files/"
+    },
+    "gcm": {
+        "apiKey": "AIzaSyA3u90EPyZ39ZMUYjni-YiifwKjdtnXlDI"
     }
 }

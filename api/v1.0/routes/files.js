@@ -14,6 +14,7 @@ function createResponseData(files) {
             size: file.size,
             hash: file.hash,
             modified: file.modified,
+            deleted: file.deleted,
             created: file.created
         };
     });
@@ -75,8 +76,7 @@ exports.getFiles = function(type) {
         if (errors) res.send(400, errors);
 
         var matchOpts = {
-            user: ObjectId(req.user.id),
-            deleted: false
+            user: ObjectId(req.user.id)
         };
 
         if (req.query.from) {
@@ -98,8 +98,10 @@ exports.getFiles = function(type) {
                     _id: '$path',
                     path: { $first: '$path' },
                     version: { $first: '$version' },
+                    deleted: { $first: '$deleted' },
                     size: { $first: '$size' },
                     hash: { $first: '$hash' },
+                    modified: { $first: '$modified' },
                     created: { $first: '$created' }
                 }
             },
@@ -107,9 +109,11 @@ exports.getFiles = function(type) {
                 $project: {
                     _id: 0,
                     path: 1,
+                    deleted: 1,
                     version: 1,
                     size: 1,
                     hash: 1,
+                    modified: 1,
                     created: 1
                 }
             },
@@ -161,6 +165,7 @@ exports.uploadFile = function(req, res, next) {
                 }
 
                 file.version = (latestFile && latestFile.version + 1) || 0;
+                file.modifed = new Date();
 
                 File.create(file, function(err, file) {
                     if (err) {
@@ -178,6 +183,8 @@ exports.uploadFile = function(req, res, next) {
             if (err) {
                 return next(err);
             }
+
+            req.app.emit('upload', result.data.toObject());
 
             res.send(result.status, result.text || result.data);
         });
@@ -245,6 +252,9 @@ exports.deleteFile = function(req, res, next) {
 
         }, function(err) {
             if (err) return next(err);
+
+            req.app.emit('delete', { path: req.query.path });
+
             res.send(200, {});
         });
     });
@@ -261,6 +271,8 @@ exports.move = function(req, res, next) {
         if (!success) {
             return res.send(400);
         }
+
+        req.emit('move', req.body);
 
         res.send(200, {});
     });

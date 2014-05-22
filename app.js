@@ -12,10 +12,13 @@ require('./libs/db_init')(config.get('db'));
 
 log.info('Initializing authentication module');
 var auth = require('auth');
-
 auth.init(config.get('auth'));
 
 var app = express();
+
+log.info('Initializing Google Cloud Messaging');
+require('gcm')(app, config.get('gcm'));
+
 
 // all environments
 app.set('env', config.get('NODE_ENV') || 'development');
@@ -31,8 +34,24 @@ app.use(expressValidator());
 app.use(express.methodOverride());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+if ('development' == app.get('env')) {
+	app.use(function(req, res, next) {
+		var objCount = 0;
+
+		for (var k in req.body) objCount++;
+
+		if (objCount) {
+		    console.log('BODY', req.body);
+		}
+		
+	    next();
+	});
+
+}
+
 app.use(function(req, res, next) {
-    console.log('BODY', req.body);
+    req.app = app;
     next();
 });
 

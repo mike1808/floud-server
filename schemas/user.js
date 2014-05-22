@@ -15,6 +15,8 @@ var UserSchema = new Schema({
         unique: true
     },
 
+    regIds: [String],
+
 
     hashedPassword: String,
     salt: String,
