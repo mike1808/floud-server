@@ -149,6 +149,8 @@ exports.uploadFile = function(req, res, next) {
     var attachedFile = req.files.file;
     var hash = attachedFile.hash;
 
+    // FIXME
+    if (!hash) throw new Error('fix hash!');
     if (file.hash != hash) {
         return res.send(400, 'Files damaged during uploading');
     }

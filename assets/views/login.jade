@@ -1,9 +1,21 @@
-form.form-signin(ng-submit='login(user.username, user.password)')
-    h2.form-signin-heading Please sign in
-    input.form-control(type='text', placeholder='Username', required, autofocus, ng-model='user.username')
-    input.form-control(type='password', placeholder='Password', required, ng-model='user.password')
-    label.checkbox
-        input.checkbox(type='checkbox', value='remember-me')
-        | Remember me
-    button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign in
-    a.btn.btn-lg.btn-default.btn-block(href='/signup') Sign up
+.jumbotron
+    .container
+        .h1 Floud Cloud
+        p Floud Cloud is cloud file storage with synchronization on all your devices!
+
+.raw
+    .col-lg-6.col-lg-offset-3
+        .well
+            form.form-horizontal(ng-submit='login(user.username, user.password)')
+                fieldset
+                    legend  Sing In
+                    .form-group
+                        .col-lg-12
+                            input.form-control#inputUsername(type='text', placeholder='Username', required, autofocus, ng-model='user.username')
+                    .form-group
+                        .col-lg-12
+                            input.form-control#inputPassowrd(type='password', placeholder='Password', required, ng-model='user.password')
+                    .form-group
+                        .col-lg-12
+                            button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign In
+                            a.btn.btn-lg.btn-default.btn-block(href='/signup') Sign Up

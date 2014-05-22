@@ -1,6 +1,18 @@
-form.form-signup(ng-submit='signup(user)')
-    h2.form-signup-heading Sign up form
-    input.form-control(type='text', placeholder='Username', required, autofocus, ng-model='user.username')
-    input.form-control(type='password', placeholder='Password', required, ng-model='user.password')
-    input.form-control(type='email', placeholder='Email', required, ng-model='user.email')
-    button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign up
+.raw
+    .col-lg-6.col-lg-offset-3
+        .well
+            form.form-horizontal(ng-submit='signup(user)')
+                fieldset
+                    legend  Sing Up
+                    .form-group
+                        .col-lg-12
+                            input.form-control(type='text', placeholder='Username', required, autofocus, ng-model='user.username')
+                    .form-group
+                        .col-lg-12
+                            input.form-control(type='password', placeholder='Password', required, ng-model='user.password')
+                    .form-group
+                        .col-lg-12
+                            input.form-control(type='email', placeholder='Email', required, ng-model='user.email')
+                    .form-group
+                        .col-lg-12
+                            button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign Up

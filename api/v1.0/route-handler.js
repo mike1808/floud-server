@@ -4,8 +4,8 @@ var files = require('./routes/files');
 var users = require('./routes/users');
 var multipart = require('connect-multiparty');
 var multipartMiddleware = multipart({
-    uploadDir: path.join(process.cwd(), 'tmp'),
     autoFiles: true,
+    uploadDir: path.join(process.cwd(), 'tmp'),
     hash: 'sha1'
 });
 
