@@ -1,29 +1,39 @@
-div(style='margin: 10px 0 30px 0; padding: 10px; background-color: #EEEEEE; border-radius: 5px; font: 12px Tahoma;')
-    span
-        b Selected Node
-        | : {{filesTree.currentNode.name}}
+.row
+    .file-drop(ng-file-drop='ctrl.onFileSelect($files)', ng-file-drag-over-class='ng-file-over')
+        p.text Drop your file to upload
+.row
+    .col-lg-2.col-lg-offset-1
+        .form-group
+            input.form-control(type='text', ng-model='ctrl.dirName')
+    .col-lg-6
+        btn.btn.btn-default(ng-click='ctrl.mkDir()') Create Directory
 //
-        [TREE attribute]
-        angular-treeview: the treeview directive
-        tree-id : each tree's unique id.
-        tree-model : the tree model on $scope.
-        node-id : each node's id
-        node-label : each node's label
-        node-children: each node's children
-
-div(angular-treeview='true', tree-id='filesTree', tree-model='files', node-id='$id', node-label='name', node-children='children')
-
-input(type='text', ng-model='filePath')
-input(type='file', ng-file-select)
+//.row(ng-if='ctrl.uploading')
+//    .progress.progress-striped.active
+//        .progress-bar(ng-style='{width: ctrl.progress}')
 
 .row
-    .col-lg-10.col-lg-offset-1
+    .col-lg-10.col-lg-offset-1(ng-file-drop='ctrl.onFileSelect($files)')
         table.table.table-striped.table-hover
             thead
                 tr
-                    th Name
-                    th Type
-                    th Size
-                    th Last Modified
-                    th
+                    th.col-lg-1
+                    th.col-lg-3
+                    th.col-lg-2
+                    th.col-lg-2
+                    th.col-lg-2
+                    th.col-lg-2
             tbody
+                tr(ng-repeat='file in ctrl.currentDir.children', ng-if='!ctrl.isDeleted(file)', ng-click='ctrl.processFile(file)')
+                    td
+                        i.fa.fa-4x(ng-class='ctrl.getIcon(file)')
+                    td
+                        p {{ file.name }}
+                    td
+                        p {{ file.type }}
+                    td
+                        p {{ file.size | bytes }}
+                    td
+                        p {{ file.modified | amDateFormat: 'D/M/YYYY H:m:s' }}
+                    td
+                        button.btn.btn-default(ng-if='file.type', ng-click='ctrl.deleteFile($event, file, $index)') Delete

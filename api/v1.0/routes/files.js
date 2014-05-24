@@ -34,7 +34,6 @@ function parseFileName(path) {
 function createFilesTree(files) {
     var tree = [{
         name: '/',
-        id: generateRandomStr(6),
         children: []
     }];
 
@@ -50,14 +49,13 @@ function createFilesTree(files) {
             });
 
             if (!dirExists) {
-                subtree.children.push({
+                subtree.children.unshift({
                     name: tokens[i],
-                    id: generateRandomStr(6),
                     children: []
                 });
             }
 
-            subtree = subtree.children[subtree.children.length - 1];
+            subtree = subtree.children[0];
         }
 
         file.name = file.path.substr(file.path.lastIndexOf('/') + 1);
@@ -188,7 +186,7 @@ exports.uploadFile = function(req, res, next) {
 
             req.app.emit('change', {
                 userId: req.user.id.toString(),
-                regId: req.query.regId
+                regId: req.user.regId
             });
 
             res.send(result.status, result.text || result.data);
@@ -261,7 +259,7 @@ exports.deleteFile = function(req, res, next) {
 
             req.app.emit('change', {
                 userId: req.user.id.toString(),
-                regId: req.query.regId
+                regId: req.user.regId
             });
 
             res.send(200, {});
@@ -283,7 +281,7 @@ exports.move = function(req, res, next) {
 
         req.app.emit('change', {
             userId: req.user.id.toString(),
-            regId: req.query.regId
+            regId: req.user.regId
         });
 
         res.send(200, {});

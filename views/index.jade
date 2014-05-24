@@ -3,7 +3,9 @@ html(ng-app='floud', ng-controller='MainCtrl')
     head
         title Floud
 
+        link(href='/css/font-awesome.css', rel='stylesheet')
         link(href='/css/bootstrap/bootstrap.css', rel='stylesheet')
+        link(href='/libs/angular-growl/build/angular-growl.min.css', rel='stylesheet')
         link(href='/css/app.css', rel='stylesheet')
         meta(name='viewport', content='width=device-width, initial-scale=1.0')
         meta(name='description', content='')
@@ -11,12 +13,14 @@ html(ng-app='floud', ng-controller='MainCtrl')
         meta(charset='utf-8')
         base(href='/')
     body
+        div(growl)
         .background-image
         section.content
             .container(ng-view)
 
         // jquery and friends
         script(src='/libs/jquery/jquery.min.js')
+        script(src='/libs/filesaver/FileSaver.js')
 
         script(src='http://crypto-js.googlecode.com/svn/tags/3.1/build/components/core.js')
         script(src='http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha1.js')
@@ -29,9 +33,13 @@ html(ng-app='floud', ng-controller='MainCtrl')
         script(src='/libs/angular/angular.min.js')
         script(src='/libs/angular-route/angular-route.min.js')
         script(src='/libs/angular-resource/angular-resource.min.js')
+        script(src='/libs/angular-growl/build/angular-growl.min.js')
+        script(src='/libs/moment/min/moment.min.js')
+        script(src='/libs/angular-file-upload/angular-file-upload.min.js')
+        script(src='/libs/angular-moment/angular-moment.min.js')
         script(src='/libs/angular-local-storage/angular-local-storage.min.js')
         script(src='/libs/angular-strap/dist/angular-strap.min.js')
-        script(src='/libs/angular-treeview/angular.treeview.js')
+        script(src='/libs/angular-hotkeys/build/hotkeys.min.js')
         script(src='/libs/angular-file-upload/angular-file-upload.js')
 
         script(src='/js/angular/app.js')

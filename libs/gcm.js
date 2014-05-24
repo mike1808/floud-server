@@ -23,14 +23,17 @@ module.exports = function(app, usersRegIds, config) {
 
         var regIds = users[data.userId];
 
-        /*if (data.regId) {
+        if (data.regId) {
             regIds = regIds.filter(function(regId) {
                 return regId !== data.regId;
             });
-        }*/
+        }
 
-        sender.send(message, regIds, 4, function(err, result) {
-            console.log(err || result);
-        })
+        if (regIds && regIds.length) {
+            sender.send(message, regIds, 4, function(err, result) {
+                console.log('Push notification was sent to ' + result.success);
+            });
+        }
+
     });
 };

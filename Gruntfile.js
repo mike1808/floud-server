@@ -66,6 +66,6 @@ module.exports = function(grunt) {
     // Default task(s).
     grunt.registerTask('default', ['jade', 'watch']);
     grunt.registerTask('css', ['less', 'csscomb']);
-    grunt.registerTask('build', ['clean', 'css', 'jade']);
+    grunt.registerTask('build', ['clean', 'css', 'jade', 'watch']);
 
 };

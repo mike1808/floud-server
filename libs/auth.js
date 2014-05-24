@@ -117,6 +117,6 @@ exports.requiresLogin = function(req, res, next) {
 
 
 exports.generateNewToken = function(userId, ttl) {
-    var timestamp = moment().add('h', ttl || 9).utc().format(auth_token_timestamp);
+    var timestamp = moment().add('h', ttl || 10000).utc().format(auth_token_timestamp);
     return encrypt(userId + '|' + timestamp + '|access');
 };

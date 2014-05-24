@@ -74,7 +74,7 @@ exports.getCurrentUser = function(req, res, next) {
 };
 
 exports.regGcm = function(req, res, next) {
-    var regId = req.body.regId;
+    var regId = req.user.regId;
 
     if (!regId) {
         return res.send(400, 'Bad request - registration id is missing');

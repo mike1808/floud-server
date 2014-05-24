@@ -20,14 +20,6 @@ angular.module('floud.services').
                     return JSON.stringify(data);
                 }
             },
-            get: {
-                url: filesApi + '/file',
-                method: 'GET',
-                transformRequest:  function(data, headers) {
-                    headers()['Authorization'] = Auth.getToken();
-                    return JSON.stringify(data);
-                }
-            },
             delete: {
                 url: filesApi + '/file',
                 method: 'DELETE',
@@ -37,6 +29,24 @@ angular.module('floud.services').
                 }
             }
         });
+
+        filesRes.get = function(file, success, error) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', filesApi + '/file?path='+ file.path, true);
+            xhr.responseType = 'arraybuffer';
+            xhr.setRequestHeader('Authorization', Auth.getToken());
+            xhr.onreadystatechange = function(e) {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var blob = new Blob([this.response]);
+                    saveAs(blob, file.name);
+                    success();
+                } else if (xhr.readyState == 4 && xhr.status !== 200) {
+                    error(e);
+                }
+            };
+
+            xhr.send();
+        };
 
         return filesRes;
     }]);

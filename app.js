@@ -70,8 +70,6 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.use(app.router);
-
 
 // development only
 if ('development' == app.get('env')) {
@@ -84,11 +82,9 @@ var apiServer = require('./api/v' + apiVersion + '/server');
 app.use('/api/v' + apiVersion, apiServer);
 
 
-
-app.get('/', function(req, res) {
+app.get('*', function(req, res) {
     res.render('index');
 });
-
 
 
 http.createServer(app).listen(app.get('port'), function() {
