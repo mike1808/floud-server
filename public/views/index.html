@@ -13,6 +13,9 @@
   <div class="col-lg-6">
     <btn ng-click="ctrl.mkDir()" class="btn btn-default">Create Directory</btn>
   </div>
+  <div class="col-lg-3">
+    <btn ng-click="ctrl.toggleDeletedFiles()" class="btn btn-default">Show/Hide deleted files</btn>
+  </div>
 </div>
 <!---->
 <!--.row(ng-if='ctrl.uploading')-->
@@ -32,7 +35,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="file in ctrl.currentDir.children" ng-if="!ctrl.isDeleted(file)" ng-click="ctrl.processFile(file)">
+        <tr ng-repeat="file in ctrl.currentDir.children" ng-if="ctrl.showDeleted || !ctrl.isDeleted(file)" ng-click="ctrl.processFile(file)" ng-class="{deleted: ctrl.isDeleted(file)}">
           <td><i ng-class="ctrl.getIcon(file)" class="fa fa-4x"></i></td>
           <td>
             <p>{{ file.name }}</p>
@@ -47,7 +50,8 @@
             <p>{{ file.modified | amDateFormat: 'D/M/YYYY H:m:s' }}</p>
           </td>
           <td>
-            <button ng-if="file.type" ng-click="ctrl.deleteFile($event, file, $index)" class="btn btn-default">Delete</button>
+            <button ng-if="file.type &amp;&amp; !ctrl.isDeleted(file)" ng-click="ctrl.deleteFile($event, file, $index)" class="btn btn-danger">Delete</button>
+            <button ng-if="file.type &amp;&amp; ctrl.isDeleted(file)" ng-click="ctrl.restoreFile($event, file, $index)" class="btn btn-default">Restore</button>
           </td>
         </tr>
       </tbody>

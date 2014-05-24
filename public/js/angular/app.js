@@ -15,7 +15,7 @@ app.config(['$routeProvider', '$locationProvider' , '$httpProvider', function ($
     $locationProvider.html5Mode(true).hashPrefix('!');
 
     $routeProvider.
-        when('/', { templateUrl: '/views/index.html', controller: 'FileCtrl as ctrl'}, { reloadOnSearch: false }).
+        when('/', { templateUrl: '/views/index.html', controller: 'FileCtrl as ctrl', reloadOnSearch: false }).
         when('/login', { templateUrl: '/views/login.html', controller: 'UserCtrl'}).
         when('/signup', { templateUrl: '/views/signup.html', controller: 'UserCtrl'}).
 

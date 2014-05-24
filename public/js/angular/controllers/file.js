@@ -34,6 +34,8 @@ angular
             self.init(files);
         });
 
+        this.showDeleted = false;
+
         this.init = function(files) {
             this.files = files;
             this.currentDir = files[0];
@@ -57,11 +59,25 @@ angular
             }
         };
 
+        this.toggleDeletedFiles = function() {
+            this.showDeleted = !this.showDeleted;
+        };
+
+        this.restoreFile = function(event, file, index) {
+            event.stopPropagation();
+
+            File.restore({ path: file.path }, function() {
+               self.currentDir.children[index].deleted = false;
+            }, function() {
+                growl.addErrorMessage('Sorry, we could not restore this file :(');
+            });
+        };
+
         this.deleteFile = function(event, file, index) {
             event.stopPropagation();
 
             File.delete({ path: file.path }, function() {
-                self.currentDir.children.splice(index, 1);
+                self.currentDir.children[index].deleted = true;
             }, function() {
                 growl.addErrorMessage('Sorry, we could not delete this file :(');
             });
@@ -70,7 +86,8 @@ angular
         this.mkDir = function() {
             this.currentDir.children.unshift({
                 children: [],
-                name: self.dirName
+                name: self.dirName,
+                parent: self.currentDir
             });
 
             this.dirName = '';

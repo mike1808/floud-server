@@ -5936,3 +5936,10 @@ table .info a,
   font-size: 25px;
   text-align: center;
 }
+.table-hover > tbody > tr.deleted > td,
+.table-hover > tbody > tr.deleted > th {
+  background-color: #9b7f7f;
+}
+.growl {
+  z-index: 10;
+}

@@ -153,7 +153,7 @@ exports.uploadFile = function(req, res, next) {
         return res.send(400, 'Files damaged during uploading');
     }
 
-    File.find({ path: req.body.path, deleted: false }, {}, { sort: { version: -1 }, limit: 1 }).exec(function(err, files) {
+    File.find({ path: req.body.path, deleted: false, user: req.user.id }, {}, { sort: { version: -1 }, limit: 1 }).exec(function(err, files) {
         if (err) { return next(err); }
 
         var latestFile = files && files.length && files[0] || null;
@@ -199,7 +199,7 @@ exports.sendFile = function(req, res, next) {
         return res.send(400);
     }
 
-    File.find({ path: req.query.path, deleted: false }, {}, { sort: { version: -1 }}).exec(function(err, files) {
+    File.find({ path: req.query.path, deleted: false, user: req.user.id }, {}, { sort: { version: -1 }}).exec(function(err, files) {
         if (err) {
             return next(err);
         }
@@ -241,7 +241,7 @@ exports.deleteFile = function(req, res, next) {
         return res.send(400);
     }
 
-    File.find({ path: req.query.path, deleted: false }, {}, { sort: { version: -1 }}).exec(function(err, files) {
+    File.find({ path: req.query.path, deleted: false, user: req.user.id }, {}, { sort: { version: -1 }}).exec(function(err, files) {
         if (err) {
             return next(err);
         }
@@ -267,12 +267,40 @@ exports.deleteFile = function(req, res, next) {
     });
 };
 
+exports.restore = function(req, res, next) {
+    if (!req.body.path) {
+        return res.send(400);
+    }
+
+    File.find({ path: req.body.path, user: req.user.id }, {}, { sort: { version: - 1}}, { limit: 1}).exec(function(err, files) {
+        if (err) return next(err);
+        var file = files[0];
+
+        if (!file.deleted) {
+            return res.send(400);
+        }
+
+        file.deleted = false;
+        file.save(function(err) {
+            if (err) return next(err);
+
+
+            req.app.emit('change', {
+                userId: req.user.id.toString(),
+                regId: req.user.regId
+            });
+
+            res.send(200);
+        })
+    })
+}
+
 exports.move = function(req, res, next) {
     if (!req.body.oldPath || req.body.newPath === '') {
         return res.send(400);
     }
 
-    File.update({ path: req.body.oldPath }, { $set: { path: req.body.newPath }}).exec(function(err, success) {
+    File.update({ path: req.body.oldPath, user: req.user.id }, { $set: { path: req.body.newPath }}).exec(function(err, success) {
         if (err) return next(err);
 
         if (!success) {

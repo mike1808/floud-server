@@ -31,7 +31,9 @@ module.exports = function(app, usersRegIds, config) {
 
         if (regIds && regIds.length) {
             sender.send(message, regIds, 4, function(err, result) {
-                console.log('Push notification was sent to ' + result.success);
+                if (err) console.log(err);
+                else console.log('Push notification was sent to ' + result.success);
+
             });
         }
 

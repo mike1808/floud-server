@@ -27,6 +27,14 @@ angular.module('floud.services').
                     headers()['Authorization'] = Auth.getToken();
                     return JSON.stringify(data);
                 }
+            },
+            restore: {
+                url: filesApi + '/restore',
+                method: 'POST',
+                transformRequest:  function(data, headers) {
+                    headers()['Authorization'] = Auth.getToken();
+                    return JSON.stringify(data);
+                }
             }
         });
 

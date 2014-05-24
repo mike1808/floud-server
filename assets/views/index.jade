@@ -7,6 +7,8 @@
             input.form-control(type='text', ng-model='ctrl.dirName')
     .col-lg-6
         btn.btn.btn-default(ng-click='ctrl.mkDir()') Create Directory
+    .col-lg-3
+        btn.btn.btn-default(ng-click='ctrl.toggleDeletedFiles()') Show/Hide deleted files
 //
 //.row(ng-if='ctrl.uploading')
 //    .progress.progress-striped.active
@@ -24,7 +26,8 @@
                     th.col-lg-2
                     th.col-lg-2
             tbody
-                tr(ng-repeat='file in ctrl.currentDir.children', ng-if='!ctrl.isDeleted(file)', ng-click='ctrl.processFile(file)')
+                tr(ng-repeat='file in ctrl.currentDir.children', ng-if='ctrl.showDeleted || !ctrl.isDeleted(file)',
+                ng-click='ctrl.processFile(file)', ng-class='{deleted: ctrl.isDeleted(file)}')
                     td
                         i.fa.fa-4x(ng-class='ctrl.getIcon(file)')
                     td
@@ -36,4 +39,5 @@
                     td
                         p {{ file.modified | amDateFormat: 'D/M/YYYY H:m:s' }}
                     td
-                        button.btn.btn-default(ng-if='file.type', ng-click='ctrl.deleteFile($event, file, $index)') Delete
+                        button.btn.btn-danger(ng-if='file.type && !ctrl.isDeleted(file)', ng-click='ctrl.deleteFile($event, file, $index)') Delete
+                        button.btn.btn-default(ng-if='file.type && ctrl.isDeleted(file)', ng-click='ctrl.restoreFile($event, file, $index)') Restore
