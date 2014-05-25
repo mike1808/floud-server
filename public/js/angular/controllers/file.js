@@ -2,7 +2,7 @@
 
 angular
     .module('floud.controllers')
-    .controller('FileCtrl', function(File, hotkeys, growl, $scope, Auth, $upload, $timeout, $location) {
+    .controller('FileCtrl', function(File, hotkeys, growl, $scope, Auth, $upload, $timeout, $location, mySocket) {
         var self = this;
         var icons = {
             directory: 'fa-folder',
@@ -66,8 +66,8 @@ angular
         this.restoreFile = function(event, file, index) {
             event.stopPropagation();
 
-            File.restore({ path: file.path }, function() {
-               self.currentDir.children[index].deleted = false;
+            File.restore({ path: file.path }, {}, function() {
+               //self.currentDir.children[index].deleted = false;
             }, function() {
                 growl.addErrorMessage('Sorry, we could not restore this file :(');
             });
@@ -77,7 +77,7 @@ angular
             event.stopPropagation();
 
             File.delete({ path: file.path }, function() {
-                self.currentDir.children[index].deleted = true;
+                //self.currentDir.children[index].deleted = true;
             }, function() {
                 growl.addErrorMessage('Sorry, we could not delete this file :(');
             });
@@ -157,9 +157,9 @@ angular
                         file: file,
                         data: formData
                     }).then(function(response) {
-                        var file = response.data;
+                        /*var file = response.data;
                         file.name = file.path.substr(file.path.lastIndexOf('/') + 1);
-                        self.currentDir.children.push(file);
+                        self.currentDir.children.push(file);*/
                     }, function() {
                         growl.addErrorMessage('Something happened during the upload!');
                         $timeout(function() {
@@ -221,6 +221,54 @@ angular
             return joinPath(getPathTo(file.parent), file.name);
         }
 
+        function findFile(path) {
+            var tokens = path.split('/');
+            if (tokens[0] !== '') return;
+
+            var tree = self.files[0];
+            for (var j = 1; j < tokens.length; j++) {
+                for (var i = 0; i < tree.children.length; i++) {
+                    if (tree.children[i].name == tokens[j]) {
+                        tree = tree.children[i];
+                        break;
+                    }
+                }
+            }
+
+            return tree;
+        }
+
+        function insertFiles(files) {
+            var tree = self.files;
+
+            files.forEach(function(file) {
+                var tokens = file.path.split('/');
+
+                var subtree = tree[0];
+
+                for(var i = 1; i <= tokens.length - 2; i++) {
+                    var dirExists = false;
+                    subtree.children.forEach(function(child) {
+                        if (child.name == tokens[i]) dirExists = true;
+                    });
+
+                    if (!dirExists) {
+                        subtree.children.unshift({
+                            name: tokens[i],
+                            children: []
+                        });
+                    }
+
+                    subtree = subtree.children[0];
+                }
+
+                file.name = file.path.substr(file.path.lastIndexOf('/') + 1);
+                subtree.children.push(file);
+            });
+
+            return tree;
+        }
+
         function changeDirTo(path) {
             var tokens = path.split('/');
 
@@ -240,4 +288,18 @@ angular
 
             self.currentDir = currentDir;
         }
+
+        $scope.$on('socket:upload', function(evt, file) {
+            insertFiles([file]);
+        });
+
+        $scope.$on('socket:delete', function(evt, data) {
+            findFile(data.path).deleted = true;
+        });
+
+
+        $scope.$on('socket:restore', function(evt, data) {
+            findFile(data.path).deleted = false;
+        });
+
     });

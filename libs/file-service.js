@@ -15,9 +15,10 @@ var config = require('config');
  * @param {string} fileId      - id of the file
  * @param {object} user        - user object with username and id
  * @param {saveFileCallback} callback
+ * @param version
  */
-function saveFile(filePath, fileId, user, callback) {
-    var newFilePath = _getFilePath(config.get('storage:path'), fileId, user);
+function saveFile(filePath, fileId, version, user, callback) {
+    var newFilePath = _getFilePath(config.get('storage:path'), fileId, user, version);
 
     fs.exists(path.dirname(newFilePath), function(exists) {
         if (exists) {
@@ -76,13 +77,14 @@ function makePublic(filePath, fileId, fileName, cb) {
  * @param {object} user        - user object with username and id
  * @returns {string}           - path of file
  * @private
+ * @param version
  */
-function _getFilePath(storagePath, fileId, user) {
-    return path.join(storagePath, user.username + '-' + user.id, fileId);
+function _getFilePath(storagePath, fileId, user, version) {
+    return path.join(storagePath, user.username + '-' + user.id, fileId + version);
 }
 
 exports.saveFile = saveFile;
 exports.makePublic = makePublic;
-exports.getFilePath = function(fileId, user) {
-    return _getFilePath(config.get('storage:path'), fileId, user);
+exports.getFilePath = function(fileId, user, version) {
+    return _getFilePath(config.get('storage:path'), fileId, user, version);
 };

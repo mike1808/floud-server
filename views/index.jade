@@ -18,6 +18,8 @@ html(ng-app='floud', ng-controller='MainCtrl')
             div(growl)
             .container(ng-view)
 
+        script(src='/socket.io/socket.io.js')
+
         // jquery and friends
         script(src='/libs/jquery/jquery.min.js')
         script(src='/libs/filesaver/FileSaver.js')
@@ -31,6 +33,7 @@ html(ng-app='floud', ng-controller='MainCtrl')
         // basic application js
         //angular and friends
         script(src='/libs/angular/angular.min.js')
+        script(src='/libs/angular-socket-io/socket.min.js')
         script(src='/libs/angular-route/angular-route.min.js')
         script(src='/libs/angular-resource/angular-resource.min.js')
         script(src='/libs/angular-growl/build/angular-growl.min.js')

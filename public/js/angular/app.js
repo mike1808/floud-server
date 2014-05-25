@@ -1,7 +1,7 @@
 'use strict';
 
 var app = angular.module('floud', [
-    'ngRoute', 'LocalStorageModule', 'mgcrea.ngStrap', 'cfp.hotkeys', 'angularFileUpload', 'angular-growl', 'angularMoment',
+    'ngRoute', 'LocalStorageModule', 'mgcrea.ngStrap', 'cfp.hotkeys', 'angularFileUpload', 'angular-growl', 'angularMoment', 'btford.socket-io',
     'floud.controllers', 'floud.services', 'floud.directives'
 ]);
 
@@ -31,4 +31,15 @@ app.filter('bytes', function() {
             number = Math.floor(Math.log(bytes) / Math.log(1024));
         return (bytes / Math.pow(1024, Math.floor(number))).toFixed(precision) +  ' ' + units[number];
     }
+});
+
+app.factory('mySocket', function (socketFactory, Auth) {
+    var myIoSocket = io.connect('/', { query: 'auth=' + Auth.getToken() });
+
+    var mySocket = socketFactory({
+        ioSocket: myIoSocket
+    });
+
+    mySocket.forward(['upload', 'delete', 'move', 'restore']);
+    return mySocket;
 });

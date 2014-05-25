@@ -153,7 +153,7 @@ exports.uploadFile = function(req, res, next) {
         return res.send(400, 'Files damaged during uploading');
     }
 
-    File.find({ path: req.body.path, deleted: false, user: req.user.id }, {}, { sort: { version: -1 }, limit: 1 }).exec(function(err, files) {
+    File.find({ path: req.body.path, user: req.user.id }, {}, { sort: { version: -1 }, limit: 1 }).exec(function(err, files) {
         if (err) { return next(err); }
 
         var latestFile = files && files.length && files[0] || null;
@@ -167,11 +167,13 @@ exports.uploadFile = function(req, res, next) {
                 file.version = (latestFile && latestFile.version + 1) || 0;
                 file.modifed = new Date();
 
-                File.create(file, function(err, file) {
+                file = new File(file);
+
+                file.save(function(err, file) {
                     if (err) {
                         return callback(err);
                     }
-                    fileService.saveFile(attachedFile.path, file.id, req.user, function(err, filePath) {
+                    fileService.saveFile(attachedFile.path, file.id, file.version, req.user, function(err, filePath) {
                         if (err) return callback(err);
 
                         callback(null, { status: 201, data: file });
@@ -186,7 +188,9 @@ exports.uploadFile = function(req, res, next) {
 
             req.app.emit('change', {
                 userId: req.user.id.toString(),
-                regId: req.user.regId
+                regId: req.user.regId,
+                type: 'upload',
+                data: result.data && result.data.toObject()
             });
 
             res.send(result.status, result.text || result.data);
@@ -199,7 +203,7 @@ exports.sendFile = function(req, res, next) {
         return res.send(400);
     }
 
-    File.find({ path: req.query.path, deleted: false, user: req.user.id }, {}, { sort: { version: -1 }}).exec(function(err, files) {
+    File.find({ path: req.query.path, user: req.user.id }, {}, { sort: { version: -1 }}).exec(function(err, files) {
         if (err) {
             return next(err);
         }
@@ -221,9 +225,8 @@ exports.sendFile = function(req, res, next) {
             return res.send(400, 'File with such version doesn\'t exist');
         }
 
-        var filePath = fileService.getFilePath(pendingFile.id, req.user);
+        var filePath = fileService.getFilePath(pendingFile.id, req.user, pendingFile.version);
         var fileName = pendingFile.path.substr(pendingFile.path.lastIndexOf('/') + 1);
-
 
 
         res.download(filePath, fileName, function(err) {
@@ -259,7 +262,11 @@ exports.deleteFile = function(req, res, next) {
 
             req.app.emit('change', {
                 userId: req.user.id.toString(),
-                regId: req.user.regId
+                regId: req.user.regId,
+                type: 'delete',
+                data: {
+                    path: req.query.path
+                }
             });
 
             res.send(200, {});
@@ -268,11 +275,11 @@ exports.deleteFile = function(req, res, next) {
 };
 
 exports.restore = function(req, res, next) {
-    if (!req.body.path) {
+    if (!req.query.path) {
         return res.send(400);
     }
 
-    File.find({ path: req.body.path, user: req.user.id }, {}, { sort: { version: - 1}}, { limit: 1}).exec(function(err, files) {
+    File.find({ path: req.query.path, user: req.user.id }, {}, { sort: { version: - 1}}, { limit: 1}).exec(function(err, files) {
         if (err) return next(err);
         var file = files[0];
 
@@ -287,7 +294,11 @@ exports.restore = function(req, res, next) {
 
             req.app.emit('change', {
                 userId: req.user.id.toString(),
-                regId: req.user.regId
+                regId: req.user.regId,
+                type: 'restore',
+                data: {
+                    path: file.path
+                }
             });
 
             res.send(200);
@@ -309,7 +320,12 @@ exports.move = function(req, res, next) {
 
         req.app.emit('change', {
             userId: req.user.id.toString(),
-            regId: req.user.regId
+            regId: req.user.regId,
+            type: 'move',
+            data: {
+                oldPath: req.body.oldPath,
+                newPath: req.body.newPath
+            }
         });
 
         res.send(200, {});

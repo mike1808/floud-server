@@ -19,6 +19,7 @@ var app = express();
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
 
+
 User.find({}, 'regIds').lean().exec(function(err, users) {
     if (err) throw err;
 
@@ -86,7 +87,10 @@ app.get('*', function(req, res) {
     res.render('index');
 });
 
+var server = http.createServer(app);
 
-http.createServer(app).listen(app.get('port'), function() {
+require('./libs/ws').init(server, app);
+
+server.listen(app.get('port'), function() {
     console.log('Express server listening on port ' + app.get('port'));
 });
